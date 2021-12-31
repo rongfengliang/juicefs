@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix_chart_release
+      - main
     paths:
       - "charts/**"
 
