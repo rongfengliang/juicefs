@@ -148,6 +148,9 @@ func newSQLMeta(driver, addr string, conf *Config) (Meta, error) {
 	if driver == "postgres" {
 		addr = driver + "://" + addr
 	}
+	if driver == "ob" {
+		driver = "mysql"
+	}
 	engine, err := xorm.NewEngine(driver, addr)
 	if err != nil {
 		return nil, fmt.Errorf("unable to use data source %s: %s", driver, err)
@@ -233,9 +236,9 @@ func (m *dbMeta) Init(format Format, force bool) error {
 	if err := m.db.Sync2(new(flock), new(plock)); err != nil {
 		logger.Fatalf("create table flock, plock: %s", err)
 	}
-	if m.db.DriverName() == "mysql" {
-		m.updateCollate()
-	}
+	// if m.db.DriverName() == "mysql" {
+	// 	m.updateCollate()
+	// }
 
 	var s = setting{Name: "format"}
 	ok, err := m.db.Get(&s)
@@ -351,14 +354,13 @@ func (m *dbMeta) NewSession() error {
 	if err := m.db.Sync2(new(session)); err != nil { // old client has no info field
 		return err
 	}
-	if m.db.DriverName() == "mysql" {
-		m.updateCollate()
-	}
+	// if m.db.DriverName() == "mysql" {
+	// 	m.updateCollate()
+	// }
 	// update the owner from uint64 to int64
-	if err := m.db.Sync2(new(flock), new(plock)); err != nil {
-		logger.Fatalf("update table flock, plock: %s", err)
-	}
-
+	// if err := m.db.Sync2(new(flock), new(plock)); err != nil {
+	// 	logger.Fatalf("update table flock, plock: %s", err)
+	// }
 	info := newSessionInfo()
 	info.MountPoint = m.conf.MountPoint
 	data, err := json.Marshal(info)
