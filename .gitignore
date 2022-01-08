@@ -1,4 +1,5 @@
 *.o
+apps
 *.sw[po]
 ltmain.sh
 *.orig
